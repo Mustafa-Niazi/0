@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="utf-8" />
+  <title>إدخال بيانات من PDF أو يدوي (نسخة محسنة)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+body { 
+  font-family: "Segoe UI", Tahoma, sans-serif; 
+  direction: rtl; 
+  text-align: center; 
+  background:#f5f5f5; 
+  padding:18px; 
+}
+h2 { margin: 8px 0 18px; }
+.box { 
+  background:#fff; 
+  padding:12px; 
+  border-radius:8px; 
+  box-shadow:0 3px 6px rgba(0,0,0,.08); 
+  margin:10px auto; 
+  width:100%; 
+  max-width:1500px; 
+}
+input, button { 
+  padding:8px; 
+  margin:6px 6px 6px 0; 
+  border-radius:6px; 
+  border:1px solid #ccc; 
+}
+button { 
+  background:#0078d7; 
+  color:#fff; 
+  border:0; 
+  cursor:pointer; 
+}
+button.red:hover { background:#d9534f; }
+.secondary:hover { background-color:#d9534f;  }
+table { 
+  width:95%; 
+  margin:18px auto; 
+  border-collapse:collapse; 
+  background:#fff; 
+}
+th, td { border:1px solid #ddd; padding:8px; text-align:center; }
+th { background:#0078d7; color:#fff; }
+.action-btn { padding:4px 6px; margin:0 3px; border-radius:4px; border:0; cursor:pointer; }
+.edit-btn { background:orange; color:#fff; }
+.edit-btn:hover { background:#009688; color:#fff; }
+.delete-btn { background:orange; color:#fff; }
+.delete-btn:hover { background:red; color:#fff; }
+tfoot td { background:#eee; font-weight:bold; }
+.info { text-align:left; max-width:980px; margin:6px auto; color:#333; }
+.small { font-size:0.9rem; color:#555; }
+
+.form-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  overflow-x: auto;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+}
+.form-group label {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+  color: #333;
+}
+.form-group input {
+  font-size: 1.2rem;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 175px;
+  box-sizing: border-box;
+}
+.form-row button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  background: #0078d7;
+  color: #fff;
+  cursor: pointer;
+  font-size: 17px;
+}
+#updateBtn{
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  background: #F44336;
+  color: #ffffff;
+  cursor: pointer;
+  display: none;
+  height: 38px;
+}
+#updateBtn:hover{
+  background: #0078d7;
+}
+@media (max-width: 768px) {
+  .form-row {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  .form-group {
+    flex: 1 1 45%;
+    min-width: auto;
+  }
+  .form-group input {
+    width: 100%;
+  }
+  .form-row button {
+    flex: 1 1 100%;
+    margin-top: 8px;
+  }
+}
+</style>
+</head>
+<body>
+<h2>📄 إدخال بيانات (PDF منظم 9 خانات) — نسخة محسنة</h2>
+
+<!-- الفورم الرئيسي -->
+<div class="box">
+  <form id="dataForm" onsubmit="return false;" class="form-row">
+    <div class="form-group">
+      <label for="date">التاريخ</label>
+      <input type="text" id="date" placeholder="اليوم-الشهر-السنة" maxlength="10">
+    </div>
+    <div class="form-group">
+      <label for="tractor">رقم الجرار</label>
+      <input type="text" id="tractor" placeholder="رقم الجرار" required>
+    </div>
+    <div class="form-group">
+      <label for="trailer">رقم المقطوره</label>
+      <input type="text" id="trailer" placeholder="رقم المقطوره" required>
+    </div>
+    <div class="form-group">
+      <label for="bon">رقم البون</label>
+      <input type="text" id="bon" placeholder="رقم البون" required>
+    </div>
+    <div class="form-group">
+      <label for="material">الخامة</label>
+      <input type="text" id="material" placeholder="الخامة" required>
+    </div>
+    <div class="form-group">
+      <label for="volume">التكعيب</label>
+      <input type="number" id="volume" placeholder="التكعيب" step="0.01" required>
+    </div>
+    <div class="form-group">
+      <label for="price">سعر المتر</label>
+      <input type="number" id="price" placeholder="سعر المتر" step="0.01" required>
+    </div>
+
+    <button id="addBtn" onclick="onSubmitForm()">➕ إضافة</button>
+    <button id="updateBtn" onclick="onUpdateForm()">✅ تعديل</button>
+  </form>
+</div>
+
+<!-- إدخال PDF -->
+<div class="box">
+  <div style="margin-bottom:8px;">
+    <input type="file" id="pdfInput" accept="application/pdf" />
+    <button onclick="readPDF()">📥 إدخال من PDF</button>
+    <button class="secondary" onclick="clearFile()">❌ مسح اختيار الملف</button>
+  </div>
+  <div class="info small" id="parseInfo"></div>
+</div>
+
+<!-- جدول البيانات -->
+<table id="dataTable">
+  <thead>
+    <tr>
+      <th>م</th>
+      <th>التاريخ</th>
+      <th>رقم الجرار</th>
+      <th>رقم المقطوره</th>
+      <th>رقم البون</th>
+      <th>الخامة</th>
+      <th>التكعيب</th>
+      <th>سعر المتر</th>
+      <th>إجمالي سعر المتر</th>
+      <th>عمليات</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+  <tfoot>
+    <tr>
+      <td colspan="6">الإجمالي</td>
+      <td id="totalVolume">0</td>
+      <td>-</td>
+      <td id="grandTotal">0</td>
+      <td><button class="red" onclick="deleteAll()">🗑️ حذف الجميع</button></td>
+    </tr>
+  </tfoot>
+</table>
+
+<!-- إضافة المديونية والإيداع -->
+<div class="box">
+  <h3>📌 المديونية والإيداع</h3>
+  <div class="form-row">
+    <div class="form-group">
+      <label for="debtAmount">مديونية العميل</label>
+      <input type="number" id="debtAmount" placeholder="المبلغ" step="0.01">
+    </div>
+    <div class="form-group">
+      <label for="debtDate">تاريخ المديونية</label>
+      <input type="text" id="debtDate" placeholder="اليوم-الشهر-السنة" maxlength="10" onchange="updateDebtText()">
+    </div>
+    <div class="form-group" style="flex:1 1 100%;">
+      <div id="debtText" class="info small"></div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group">
+      <label for="depositAmount">الإيداع</label>
+      <input type="number" id="depositAmount" placeholder="المبلغ" step="0.01">
+    </div>
+    <div class="form-group">
+      <label for="depositDate">تاريخ الإيداع</label>
+      <input type="text" id="depositDate" placeholder="اليوم-الشهر-السنة" maxlength="10" onchange="updateDepositText()">
+    </div>
+    <div class="form-group" style="flex:1 1 100%;">
+      <div id="depositText" class="info small"></div>
+    </div>
+  </div>
+  <div class="info small" style="font-weight:bold;">
+    الإجمالي النهائي: <span id="finalTotal">0</span>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.13.216/pdf.min.js"></script>
+
+<script>
+let editRowIndex = null;
+
+// --- دوال التاريخ ---
+function formatDate(input){
+  const parts = input.split('-');
+  if(parts.length!==3) return input;
+  let [year, month, day] = parts;
+  day = day.padStart(2,'0');
+  month = month.padStart(2,'0');
+  return `${day}-${month}-${year}`;
+}
+
+function formatDateReverse(input){
+  const parts = input.split('-');
+  if(parts.length!==3) return input;
+  let [day, month, year] = parts;
+  day = day.padStart(2,'0');
+  month = month.padStart(2,'0');
+  return `${day}-${month}-${year}`;
+}
+
+// --- Parse number ---
+function parseNumberFromString(s){
+  if(!s) return NaN;
+  const m=s.match(/-?\d[\d\.,]*/);
+  if(!m) return NaN;
+  return Number(m[0].replace(/,/g,'.'));
+}
+
+// --- إضافة صف ---
+function onSubmitForm(){
+  const dateRaw = document.getElementById("date").value;
+  const date = formatDate(dateRaw);
+  const tractor = document.getElementById("tractor").value.trim();
+  const trailer = document.getElementById("trailer").value.trim();
+  const bon = document.getElementById("bon").value.trim();
+  const material = document.getElementById("material").value.trim();
+  const volume = parseFloat(document.getElementById("volume").value);
+  const price = parseFloat(document.getElementById("price").value);
+
+  if(editRowIndex!==null){
+    updateRow(editRowIndex,date,tractor,trailer,bon,material,volume,price);
+    editRowIndex=null;
+    document.getElementById("dataForm").reset();
+    document.getElementById("addBtn").style.display="inline-block";
+    document.getElementById("updateBtn").style.display="none";
+    updateFinalTotal();
+    return;
+  }
+  addRow(date,tractor,trailer,bon,material,volume,price);
+  document.getElementById("dataForm").reset();
+  updateFinalTotal();
+}
+
+// --- إضافة صف جديد ---
+function addRow(date,tractor,trailer,bon,material,volume,price){
+  if(!date||!tractor||!trailer||!bon||!material||isNaN(volume)||isNaN(price)){
+    alert("تأكد من تعبئة كل الحقول يدوياً بشكل صحيح.");
+    return;
+  }
+  const tbody=document.querySelector("#dataTable tbody");
+  const tr=tbody.insertRow();
+  const total=(volume*price).toFixed(2);
+  tr.innerHTML=`
+    <td></td>
+    <td>${date}</td>
+    <td>${tractor}</td>
+    <td>${trailer}</td>
+    <td>${bon}</td>
+    <td>${material}</td>
+    <td>${volume}</td>
+    <td>${price}</td>
+    <td>${total}</td>
+    <td>
+      <button class="action-btn edit-btn" onclick="editRow(this)">✏️</button>
+      <button class="action-btn delete-btn" onclick="deleteRow(this)">🗑️</button>
+    </td>
+  `;
+  updateIndexes();
+  updateTotals();
+  updateFinalTotal();
+}
+
+// --- تعديل صف ---
+function editRow(button){
+  const row=button.parentElement.parentElement;
+  const tbody=document.querySelector("#dataTable tbody");
+  editRowIndex=Array.from(tbody.rows).indexOf(row);
+
+  document.getElementById("date").value=row.cells[1].innerText;
+  document.getElementById("tractor").value=row.cells[2].innerText;
+  document.getElementById("trailer").value=row.cells[3].innerText;
+  document.getElementById("bon").value=row.cells[4].innerText;
+  document.getElementById("material").value=row.cells[5].innerText;
+  document.getElementById("volume").value=row.cells[6].innerText;
+  document.getElementById("price").value=row.cells[7].innerText;
+
+  document.getElementById("addBtn").style.display="none";
+  document.getElementById("updateBtn").style.display="inline-block";
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// --- حفظ التعديل ---
+function onUpdateForm(){
+  if(editRowIndex===null) return;
+  const date = document.getElementById("date").value; // بدون formatDate
+
+  const tractor=document.getElementById("tractor").value.trim();
+  const trailer=document.getElementById("trailer").value.trim();
+  const bon=document.getElementById("bon").value.trim();
+  const material=document.getElementById("material").value.trim();
+  const volume=parseFloat(document.getElementById("volume").value);
+  const price=parseFloat(document.getElementById("price").value);
+
+  updateRow(editRowIndex,date,tractor,trailer,bon,material,volume,price);
+  document.getElementById("dataForm").reset();
+  document.getElementById("addBtn").style.display="inline-block";
+  document.getElementById("updateBtn").style.display="none";
+  editRowIndex=null;
+  updateFinalTotal();
+}
+
+// --- تحديث صف موجود ---
+function updateRow(index,date,tractor,trailer,bon,material,volume,price){
+  const tbody=document.querySelector("#dataTable tbody");
+  const row=tbody.rows[index];
+  if(!row) return;
+  const total=(volume*price).toFixed(2);
+  row.cells[1].innerText=date;
+  row.cells[2].innerText=tractor;
+  row.cells[3].innerText=trailer;
+  row.cells[4].innerText=bon;
+  row.cells[5].innerText=material;
+  row.cells[6].innerText=volume;
+  row.cells[7].innerText=price;
+  row.cells[8].innerText=total;
+  updateTotals();
+  updateFinalTotal();
+}
+
+// --- حذف صف ---
+function deleteRow(button){
+  const row=button.parentElement.parentElement;
+  row.remove();
+  updateIndexes();
+  updateTotals();
+  updateFinalTotal();
+}
+
+// --- حذف الجميع ---
+function deleteAll(){
+  document.querySelector("#dataTable tbody").innerHTML="";
+  updateIndexes();
+  updateTotals();
+  updateFinalTotal();
+}
+
+// --- تحديث أرقام الصفوف ---
+function updateIndexes(){
+  const rows=document.querySelectorAll("#dataTable tbody tr");
+  rows.forEach((r,i)=>r.cells[0].innerText=i+1);
+}
+
+// --- تحديث الإجماليات ---
+function updateTotals(){
+  const rows=document.querySelectorAll("#dataTable tbody tr");
+  let totalVolume=0, grandTotal=0;
+  rows.forEach(r=>{
+    totalVolume+=parseFloat(r.cells[6].innerText)||0;
+    grandTotal+=parseFloat(r.cells[8].innerText)||0;
+  });
+  document.getElementById("totalVolume").innerText=totalVolume.toFixed(2);
+  document.getElementById("grandTotal").innerText=grandTotal.toFixed(2);
+}
+
+// --- تحديث نص المديونية ---
+function updateDebtText(){
+  const date=document.getElementById("debtDate").value;
+  if(date){
+    document.getElementById("debtText").innerText=`مديونية على العميل من المستخلص السابق بتاريخ ${formatDate(date)}`;
+  } else document.getElementById("debtText").innerText="";
+  updateFinalTotal();
+}
+
+// --- تحديث نص الإيداع ---
+function updateDepositText(){
+  const date=document.getElementById("depositDate").value;
+  if(date){
+    document.getElementById("depositText").innerText=`دفعة تحويل بنكي ${formatDate(date)}`;
+  } else document.getElementById("depositText").innerText="";
+  updateFinalTotal();
+}
+
+// --- تحديث الإجمالي النهائي ---
+function updateFinalTotal(){
+  const grandTotal=parseFloat(document.getElementById("grandTotal").innerText)||0;
+  const debt=parseFloat(document.getElementById("debtAmount").value)||0;
+  const deposit=parseFloat(document.getElementById("depositAmount").value)||0;
+  const finalTotal=grandTotal + debt - deposit;
+  document.getElementById("finalTotal").innerText=finalTotal.toFixed(2);
+}
+
+// --- قراءة PDF ---
+async function readPDF(){
+  const input=document.getElementById("pdfInput");
+  const file=input.files[0];
+  if(!file){ alert("اختر ملف PDF أولاً"); return; }
+  document.getElementById("parseInfo").innerText="جاري قراءة الملف ...";
+  const reader=new FileReader();
+  reader.onload=async function(){
+    const typed=new Uint8Array(this.result);
+    const pdf=await pdfjsLib.getDocument(typed).promise;
+    let added=0, skipped=0;
+    for(let p=1;p<=pdf.numPages;p++){
+      const page=await pdf.getPage(p);
+      const textContent=await page.getTextContent();
+      const items=textContent.items.map(it=>{
+        const t=it.transform||[1,0,0,1,0,0];
+        return { text:(it.str||"").trim(), x:t[4], y:t[5] };
+      }).filter(i=>i.text.length>0);
+      if(items.length===0) continue;
+      items.sort((a,b)=>{
+        if(Math.abs(b.y-a.y)>0.5) return b.y-a.y;
+        return b.x-a.x;
+      });
+      const rows=[];
+      const tolerance=4;
+      items.forEach(it=>{
+        if(rows.length===0) rows.push({y:it.y, items:[it]});
+        else{
+          const last=rows[rows.length-1];
+          if(Math.abs(last.y-it.y)<=tolerance){
+            last.items.push(it);
+            last.y=(last.y*(last.items.length-1)+it.y)/last.items.length;
+          }else rows.push({y:it.y, items:[it]});
+        }
+      });
+      rows.forEach(row=>row.items.sort((a,b)=>b.x-a.x));
+      for(const row of rows){
+        const texts=row.items.map(it=>it.text);
+        if(texts.length<2){ skipped++; continue; }
+        const serialCandidate=texts[0].match(/^\d+$/);
+        if(!serialCandidate){
+          const findSerial=texts.find(t=>/^\d+$/.test(t));
+          if(!findSerial){ skipped++; continue; }
+        }
+        const nodes=texts.map(t=>({raw:t,num:parseNumberFromString(t)}));
+        let idxTotal=-1, idxPrice=-1, idxVolume=-1;
+        for(let k=nodes.length-1;k>=0;k--){
+          if(idxTotal===-1 && Number.isFinite(nodes[k].num)){ idxTotal=k; continue; }
+          if(idxTotal!==-1 && idxPrice===-1 && Number.isFinite(nodes[k].num)){ idxPrice=k; continue; }
+          if(idxPrice!==-1 && idxVolume===-1 && Number.isFinite(nodes[k].num)){ idxVolume=k; break; }
+        }
+        if(idxPrice===-1 || idxVolume===-1){
+          const numericIndices=nodes.map((n,i)=>Number.isFinite(n.num)?i:-1).filter(i=>i>=0);
+          if(numericIndices.length>=2){
+            idxPrice=numericIndices[numericIndices.length-1];
+            idxVolume=numericIndices[numericIndices.length-2];
+            idxTotal=numericIndices[numericIndices.length-1];
+          }else{ skipped++; continue; }
+        }
+        const priceVal=nodes[idxPrice].num;
+        const volumeVal=nodes[idxVolume].num;
+        if(!Number.isFinite(priceVal)||!Number.isFinite(volumeVal)){ skipped++; continue; }
+        const serial=nodes[0].raw;
+        const date=nodes[1]?formatDateReverse(nodes[1].raw):"";
+        const middle=nodes.slice(2, idxVolume);
+        if(middle.length<3){ skipped++; continue; }
+        const tractor=middle[0].raw||"";
+        const trailer=middle[1]?middle[1].raw:"";
+        const bon=middle[2]?middle[2].raw:"";
+        const materialParts=middle.slice(3).map(n=>n.raw).filter(Boolean);
+        const material=materialParts.join(" ")||(middle[2]&&middle[2].raw)||"";
+        addRow(date, tractor, trailer, bon, material, volumeVal, priceVal);
+        added++;
+      }
+    }
+    document.getElementById("parseInfo").innerText=`تمت المعالجة: تم إضافة ${added} صف — تم تجاهل ${skipped} سطر.`;
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// --- مسح ملف PDF ---
+function clearFile(){
+  document.getElementById("pdfInput").value="";
+  document.getElementById("parseInfo").innerText="";
+  alert("تم مسح اختيار الملف ✅");
+}
+</script>
+
+</body>
+</html>
