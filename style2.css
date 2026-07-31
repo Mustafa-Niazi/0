@@ -641,3 +641,35 @@ input[list="number"]:focus,input[list="month"]:focus {
     color: #dc2626;
 }
 .btn-copy-delete, .btn-danger:hover { background-color: #dc2626; }
+@media screen and (max-width: 768px) {
+    .main {
+        width: 100% !important;
+        padding: 10px !important;
+        margin: 0 !important;
+        border: none !important; /* لو حابب تشيل الإطار الخارجي على الموبايل */
+    }
+
+    /* ضبط الحقول والصفوف لتنزل تحت بعضها بانتظام */
+    .row {
+        display: flex;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+
+    .row .input {
+        width: 100% !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .row .input input, 
+    .row .input textarea {
+        width: 100% !important;
+    }
+
+    /* ضبط الجدول ليتناسب مع عرض شاشة التليفون */
+    table {
+        width: 100% !important;
+        font-size: 12px !important;
+    }
+}
