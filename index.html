@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نموذج سداد تأمينات</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="style2.css">
+    <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Readex+Pro:wght@400;700&display=swap" rel="stylesheet">
@@ -13,132 +12,125 @@
 <body>
 
     <div class="main" id="mainForm" data-copy-id="live">
-        
-        <!-- ================= الجزء العلوي (سيتحول إلى صورة للحفاظ على الترويسة) ================= -->
-        <div id="top-section">
-            <div class="hader">
-                <div class="h2">
-                    <h2>الهيئة القومية للتأمين الاجتماعي</h2>
-                    <h2>مكتب خدمة مواطنين</h2>
-                    <h2 class="h22">..........................</h2>
-                </div>
-                <img src="logo.png" alt="شعاري الهيئة">
-                <img src="qr-code.png" alt="qr">
+        <div class="hader">
+            <div class="h2">
+                <h2>الهيئة القومية للتأمين الاجتماعي</h2>
+                <h2>مكتب خدمة مواطنين</h2>
+                <h2 class="h22">..........................</h2>
             </div>
-
-            <h2 class="h21">طلب سداد تأمينات مستخلص جاري / تعويضات / فروق أسعار</h2>
-            <h2>السيد / مدير مكتب خدمة مواطنين .........................</h2>
-            <h2 class="h21">تحية طيبة وبعد،،،</h2>
+            <img src="https://www.nosi.gov.eg/_layouts/15/NOSI.Portal.Branding/images/logo.png" alt="شعاري الهيئة">
+            <img src="qr-code.png" alt="qr">
         </div>
 
-        <!-- ================= الجزء السفلي (سيتحول إلى نصوص وجداول حقيقية) ================= -->
-        <div id="bottom-section">
-            <div class="font">
-                يرجى الإحاطة بأنه جاري صرف المستخلص رقم: ( 
-                <input list="number" data-key="mainNumber">
-                <datalist id="number"></datalist> 
-                ) عن شهر / سنة: ( 
-                <input list="month" data-key="mainMonth">
-                <datalist id="month"></datalist> 
-                )
-            </div>
+        <h2 class="h21">طلب سداد تأمينات مستخلص جاري / تعويضات / فروق أسعار</h2>
+        <h2>السيد / مدير مكتب خدمة مواطنين .........................</h2>
+        <h2 class="h21">تحية طيبة وبعد،،،</h2>
+        
+        <div class="font">
+            يرجى الإحاطة بأنه جاري صرف المستخلص رقم: ( 
+            <input list="number" data-key="mainNumber">
+            <datalist id="number"></datalist> 
+            ) عن شهر / سنة: ( 
+            <input list="month" data-key="mainMonth">
+            <datalist id="month"></datalist> 
+            )
+        </div>
 
-            <div class="hed">
-                <p>نوع المستخلص: جاري</p> <input type="checkbox" data-key="typeJari"> 
-                <p>تعويضات</p> <input type="checkbox" data-key="typeTaawidat"> 
-                <p>فروق أسعار</p> <input type="checkbox" data-key="typeFrooq">
-            </div>
+        <div class="hed">
+            <p>نوع المستخلص: جاري</p> <input type="checkbox" data-key="typeJari"> 
+            <p>تعويضات</p> <input type="checkbox" data-key="typeTaawidat"> 
+            <p>فروق أسعار</p> <input type="checkbox" data-key="typeFrooq">
+        </div>
 
-            <div class="row">
-                <div class="input"><h2>اسم جهة الإسناد :</h2> <input type="text" data-key="entityName"></div>
-                <div class="input"><h2>رقم جهة الإسناد :</h2> <input type="text" data-key="entityNumber"></div>
-                <div class="input"><h2>اسم المقاول :</h2> <input type="text" data-key="contractorName"></div>
-                <div class="input"><h2>رقم المقاول :</h2> <input type="text" data-key="contractorNumber"></div>
-                <div class="input"><h2>اسم العملية :</h2> <textarea data-key="operationName"></textarea></div>
-                <div class="input"><h2>رقم العمليه :</h2> <input type="text" data-key="operationNumber"></div>
+        <div class="row">
+            <div class="input"><h2>اسم جهة الإسناد :</h2> <input type="text" data-key="entityName"></div>
+            <div class="input"><h2>رقم جهة الإسناد :</h2> <input type="text" data-key="entityNumber"></div>
+            <div class="input"><h2>اسم المقاول :</h2> <input type="text" data-key="contractorName"></div>
+            <div class="input"><h2>رقم المقاول :</h2> <input type="text" data-key="contractorNumber"></div>
+            <div class="input"><h2>اسم العملية :</h2> <textarea data-key="operationName"></textarea></div>
+            <div class="input"><h2>رقم العمليه :</h2> <input type="text" data-key="operationNumber"></div>
 
-                <div class="date">
-                    <h2>فتره المستخلص من :</h2>
-                    <div class="day"><input type="text" maxlength="1" data-key="fromDay1"><input type="text" maxlength="1" data-key="fromDay2"></div>
-                    <div class="month"><input type="text" maxlength="1" data-key="fromMonth1"><input type="text" maxlength="1" data-key="fromMonth2"></div>
-                    <div class="yare">
-                        <input type="text" maxlength="1" data-key="fromYear1"><input type="text" maxlength="1" data-key="fromYear2">
-                        <input type="text" maxlength="1" data-key="fromYear3"><input type="text" maxlength="1" data-key="fromYear4">
-                    </div>
-                </div>
-
-                <div class="date">
-                    <h2>الي :</h2>
-                    <div class="day"><input type="text" maxlength="1" data-key="toDay1"><input type="text" maxlength="1" data-key="toDay2"></div>
-                    <div class="month"><input type="text" maxlength="1" data-key="toMonth1"><input type="text" maxlength="1" data-key="toMonth2"></div>
-                    <div class="yare">
-                        <input type="text" maxlength="1" data-key="toYear1"><input type="text" maxlength="1" data-key="toYear2">
-                        <input type="text" maxlength="1" data-key="toYear3"><input type="text" maxlength="1" data-key="toYear4">
-                    </div>
+            <div class="date">
+                <h2>فتره المستخلص من :</h2>
+                <div class="day"><input type="text" maxlength="1" data-key="fromDay1"><input type="text" maxlength="1" data-key="fromDay2"></div>
+                <div class="month"><input type="text" maxlength="1" data-key="fromMonth1"><input type="text" maxlength="1" data-key="fromMonth2"></div>
+                <div class="yare">
+                    <input type="text" maxlength="1" data-key="fromYear1"><input type="text" maxlength="1" data-key="fromYear2">
+                    <input type="text" maxlength="1" data-key="fromYear3"><input type="text" maxlength="1" data-key="fromYear4">
                 </div>
             </div>
 
-            <div class="text">
-                <h2>يرجى احتساب قيمة اشتراكات التأمين الاجتماعي وموافاتنا بالشهادة الدالة على السداد من المستخلص</h2>
+            <div class="date">
+                <h2>الي :</h2>
+                <div class="day"><input type="text" maxlength="1" data-key="toDay1"><input type="text" maxlength="1" data-key="toDay2"></div>
+                <div class="month"><input type="text" maxlength="1" data-key="toMonth1"><input type="text" maxlength="1" data-key="toMonth2"></div>
+                <div class="yare">
+                    <input type="text" maxlength="1" data-key="toYear1"><input type="text" maxlength="1" data-key="toYear2">
+                    <input type="text" maxlength="1" data-key="toYear3"><input type="text" maxlength="1" data-key="toYear4">
+                </div>
             </div>
-           
-            <div class="text">
-                <h2>رقم:</h2> ( <input list="number" data-key="certNumber"> )
-                <h2>وفقا للبيانات التالية</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>البند</th>
-                            <th>قيمة الاعمال المنفذه (الصافي)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><input type="text" data-key="row1Label"></td>
-                            <td><input type="text" data-key="item1"></td>
-                        </tr>
-                        <tr>
-                            <td><input type="text" data-key="row2Label"></td>
-                            <td><input type="text" data-key="item2"></td>
-                        </tr>
-                        <tr>
-                            <td><input type="text" data-key="row3Label"></td>
-                            <td><input type="text" data-key="item3"></td>
-                        </tr>
-                        <tr>
-                            <td>الاجمالي</td>
-                            <td><input type="text" data-key="total" readonly></td>
-                        </tr>
-                        <tr>
-                            <td>القيمه المضافه</td>
-                            <td><input type="text" data-key="vat" readonly></td>
-                        </tr>
-                        <tr>
-                            <td>الاجمال الكلي</td>
-                            <td><input type="text" data-key="grandtotal" readonly></td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2">
-                                وقد تم تسليم المستخلص للمقاول بتاريخ &nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp; تتعهد جهة الإسناد بصحة كافة البيانات بالنموذج والتزامها بعدم صرف أية مبالغ للمقاول تزيد عن جاري الأعمال.
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
+        </div>
 
-            <div class="coulm">
-                <div class="date2">
-                    <h3>اسم المسؤول بجهة الإسناد</h3>
-                    <h3>توقيع المسؤول بجهة الإسناد</h3>
-                    <h3>خاتم شعار الجمهورية / الشركة</h3>
-                </div>
-                <div class="date2">
-                    <h3>..................................</h3>
-                    <h3>....................................</h3>
-                    <div class="circle"></div>
-                </div>
+        <div class="text">
+            <h2>يرجى احتساب قيمة اشتراكات التأمين الاجتماعي وموافاتنا بالشهادة الدالة على السداد من المستخلص</h2>
+        </div>
+       
+        <div class="text">
+            <h2>رقم:</h2> ( <input list="number" data-key="certNumber"> )
+            <h2>وفقا للبيانات التالية</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>البند</th>
+                        <th>قيمة الاعمال المنفذِه (الصافي)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" data-key="row1Label"></td>
+                        <td><input type="text" data-key="item1"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" data-key="row2Label"></td>
+                        <td><input type="text" data-key="item2"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" data-key="row3Label"></td>
+                        <td><input type="text" data-key="item3"></td>
+                    </tr>
+                    <tr>
+                        <td>الاجمالي</td>
+                        <td><input type="text" data-key="total" readonly></td>
+                    </tr>
+                    <tr>
+                        <td>القيمه المضافه</td>
+                        <td><input type="text" data-key="vat" readonly></td>
+                    </tr>
+                    <tr>
+                        <td>الاجمال الكلي</td>
+                        <td><input type="text" data-key="grandtotal" readonly></td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2">
+                            وقد تم تسليم المستخلص للمقاول بتاريخ &nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp; تتعهد جهة الإسناد بصحة كافة البيانات بالنموذج والتزامها بعدم صرف أية مبالغ للمقاول تزيد عن جاري الأعمال.
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="coulm">
+            <div class="date2">
+                <h3>اسم المسؤول بجهة الإسناد</h3>
+                <h3>توقيع المسؤول بجهة الإسناد</h3>
+                <h3>خاتم شعار الجمهورية / الشركة</h3>
+            </div>
+            <div class="date2">
+                <h3>..................................</h3>
+                <h3>....................................</h3>
+                <div class="circle"></div>
             </div>
         </div>
 
@@ -153,17 +145,6 @@
     <div id="savedCopies"></div>
 
     <!-- Modals -->
-    <div id="resetModal" class="modal-overlay" style="display: none;">
-        <div class="modal-box">
-            <h3>تم حفظ النسخة بنجاح</h3>
-            <p>هل تريد تفريغ بيانات النموذج الرئيسي لبدء عملية جديدة؟</p>
-            <div class="modal-actions">
-                <button id="btnResetYes" type="button" class="btn-modal btn-primary">نعم، فرّغ البيانات</button>
-                <button id="btnResetNo" type="button" class="btn-modal btn-cancel">لا، احتفظ بالبيانات</button>
-            </div>
-        </div>
-    </div>
-
     <div id="saveModal" class="modal-overlay" style="display: none;">
         <div class="modal-box">
             <button id="btnCloseSaveModal" type="button" class="modal-close-x" title="إلغاء">&times;</button>
@@ -178,7 +159,7 @@
     </div>
 
     <div id="deleteModal" class="modal-overlay" style="display: none;">
-        <div class="modal-box">
+        <div class="modal-box modal-danger">
             <button id="btnCloseDeleteModal" type="button" class="modal-close-x" title="إلغاء">&times;</button>
             <h3>تأكيد الحذف</h3>
             <p>هل أنت متأكد من إنك عايز تمسح النسخة دي؟</p>
@@ -189,6 +170,6 @@
         </div>
     </div>
 
-    <script src="js.js"></script>
+    <script src="javascript.js"></script>
 </body>
 </html>
