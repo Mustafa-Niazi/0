@@ -99,109 +99,24 @@ function clearMainForm() {
 }
 
 // ==========================================
-// 4. تصدير عنصر محدد إلى Word (الجزء العلوي صورة + الجزء السفلي نصوص)
+// 4. تصدير عنصر محدد إلى Word
 // ==========================================
-    
 function exportToWord(element) {
-    const topSection = document.querySelector('#top-section');
-    const bottomSection = document.querySelector('#bottom-section');
-
-    if (!topSection || !bottomSection) {
-        alert("يرجى التأكد من تحديد أقسام النموذج بشكل صحيح في الـ HTML");
-        return;
-    }
-
-    const topClone = topSection.cloneNode(true);
-    const topControls = topClone.querySelector('.controls');
-    if (topControls) topControls.remove();
+    const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
+        "xmlns:w='urn:schemas-microsoft-com:office:word' "+
+        "xmlns='http://www.w3.org/TR/REC-html40'>"+
+        "<head><meta charset='utf-8'><title>Export HTML to Word</title></head><body>";
+    const footer = "</body></html>";
+    const sourceHTML = header + element.innerHTML + footer;
     
-    topClone.style.position = 'absolute';
-    topClone.style.top = '-9999px';
-    topClone.style.left = '-9999px';
-    topClone.style.width = topSection.offsetWidth + 'px';
-    document.body.appendChild(topClone);
-
-    html2canvas(topClone, { 
-        scale: 1, 
-        useCORS: true,
-        logging: false,
-        windowWidth: document.documentElement.clientWidth
-    }).then(canvas => {
-        const topImage = canvas.toDataURL('image/png');
-        topClone.remove();
-
-        const bottomClone = bottomSection.cloneNode(true);
-        
-        const origInputs = bottomSection.querySelectorAll('input, textarea, select');
-        const cloneInputs = bottomClone.querySelectorAll('input, textarea, select');
-
-        origInputs.forEach((input, index) => {
-            const cloneInput = cloneInputs[index];
-            if (!cloneInput) return;
-
-            if (input.type === 'checkbox' || input.type === 'radio') {
-                if (input.checked) {
-                    cloneInput.outerHTML = '<span style="font-weight:bold; font-family:Arial;">[✔]</span>';
-                } else {
-                    cloneInput.outerHTML = '<span style="font-family:Arial;">[ ]</span>';
-                }
-            } else {
-                const val = input.value || '';
-                const span = document.createElement('span');
-                span.style.cssText = "border-bottom: 1px dotted #000; padding: 0 4px; display: inline-block;";
-                span.textContent = val;
-                cloneInput.replaceWith(span);
-            }
-        });
-
-        // تنسيق الـ HTML الخاص بملف الـ Word لضمان الترتيب الرأسي السليم
-        const wordDocument = `
-        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-        <head>
-            <meta charset='utf-8'>
-            <style>
-                body { direction: rtl; font-family: 'Arial', sans-serif; font-size: 13px; line-height: 1.6; text-align: right; }
-                .page-container { width: 100%; max-width: 18cm; margin: 0 auto; }
-                .top-img { width: 100%; height: auto; display: block; margin-bottom: 20px; }
-                table { width: 100%; border-collapse: collapse; margin-top: 15px; direction: rtl; }
-                th, td { border: 1px solid #000; padding: 6px; text-align: center; font-family: 'Arial', sans-serif; }
-                div { margin-bottom: 5px; }
-            </style>
-        </head>
-        <body>
-            <div class="page-container">
-                <!-- الصورة في الأعلى لوحدها -->
-                <div>
-                    <img class="top-img" src="${topImage}" />
-                </div>
-                
-                <hr style="border: none; border-top: 1px dashed #999; margin: 15px 0;" />
-
-                <!-- النصوص والجداول في الأسفل بترتيب رأسي سليم -->
-                <div>
-                    ${bottomClone.innerHTML}
-                </div>
-            </div>
-        </body>
-        </html>
-        `;
-
-        const blob = new Blob([wordDocument], { type: 'application/msword;charset=utf-8'  });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = 'نموذج_تأمينات_مدمج.doc';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-    }).catch(err => {
-        console.error("خطأ أثناء التصدير:", err);
-        if (topClone) topClone.remove();
-    });
+    const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+    const fileDownload = document.createElement("a");
+    document.body.appendChild(fileDownload);
+    fileDownload.href = source;
+    fileDownload.download = 'نموذج_سداد_تأمينات.doc';
+    fileDownload.click();
+    document.body.removeChild(fileDownload);
 }
-
-
-
 
 // ==========================================
 // 5. إدارة النسخ المحفوظة وطباعة نسخة منفردة
@@ -352,22 +267,28 @@ function setupDigitAutoTab(root = document) {
                 box.value = box.value.slice(-1);
                 if (box.value === "") return;
 
-                const nextBox = boxes[idx + 1]; 
-                const prevBox = boxes[idx - 1]; 
+                const nextBox = boxes[idx + 1]; // الخانة على الشمال
+                const prevBox = boxes[idx - 1]; // الخانة على اليمين
 
+                // 1. كتابة من اليمين للشمال والخانة الشمال فاضية -> كمل شمال
                 if (nextBox && nextBox.value === "") {
                     nextBox.focus();
                     nextBox.select();
-                } else if (prevBox && prevBox.value === "") {
+                } 
+                // 2. كتابة من الشمال لليمين والخانة اليمين فاضية -> كمل يمين
+                else if (prevBox && prevBox.value === "") {
                     prevBox.focus();
                     prevBox.select();
-                } else if (nextBox) {
+                }
+                // 3. الخانتين مليانين -> اتجه شمال افتراضياً
+                else if (nextBox) {
                     nextBox.focus();
                     nextBox.select();
                 }
             });
 
             box.addEventListener("keydown", (e) => {
+                // التحكم بـ Backspace
                 if (e.key === "Backspace" && box.value === "") {
                     const nextBox = boxes[idx + 1];
                     const prevBox = boxes[idx - 1];
@@ -381,6 +302,7 @@ function setupDigitAutoTab(root = document) {
                     }
                 }
                 
+                // أسهم الاتجاهات
                 if (e.key === "ArrowLeft" && idx + 1 < boxes.length) {
                     boxes[idx + 1].focus();
                 } else if (e.key === "ArrowRight" && idx > 0) {
@@ -388,6 +310,7 @@ function setupDigitAutoTab(root = document) {
                 }
             });
 
+            // تحديد المحتوى لتسهيل التعديل المباشر عند الفوكس
             box.addEventListener("focus", () => {
                 box.select();
             });
