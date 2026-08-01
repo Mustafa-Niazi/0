@@ -469,7 +469,14 @@ input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none; 
    
 }
-
+#btnDeleteConfirm:hover{
+    background: red;
+    color:white;
+}
+#btnDeleteCancel:hover{
+    background: green;
+    color: white;
+}
 /* input[type=number] {
     -moz-appearance: textfield;
 } */
