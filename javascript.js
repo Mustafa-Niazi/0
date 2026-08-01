@@ -25,33 +25,104 @@ let pendingDeleteData = null;
 let copies = [];
 
 // ==========================================
-// 2. الحسابات التلقائية للجدول
+// 2. الحسابات التلقائية للجدول + وضع التفعيل اليدوي (row3Label)
 // ==========================================
+// function calculateTotals(container = mainForm) {
+//     if (!container) return;
+
+//     // لو row3Label = "تفعيل" يبقى المستخدم بيتحكم يدويًا في الاجمالي/القيمة المضافة/الاجمالي الكلي
+//     const trigger = container.querySelector('[data-key="row3Label"]');
+//     if (trigger && trigger.value.trim() === "تفعيل") return;
+
+//     const item1 = parseFloat(container.querySelector('[data-key="item1"]')?.value) || 0;
+//     const item2 = parseFloat(container.querySelector('[data-key="item2"]')?.value) || 0;
+//     const item3 = parseFloat(container.querySelector('[data-key="item3"]')?.value) || 0;
+
+//     const total = item1 + item2 + item3;
+//     const vat = total * 0.14;
+//     const grandtotal = total + vat;
+
+//     const totalInput = container.querySelector('[data-key="total"]');
+//     const vatInput = container.querySelector('[data-key="vat"]');
+//     const grandtotalInput = container.querySelector('[data-key="grandtotal"]');
+
+//     if (totalInput) totalInput.value = total ? total.toFixed(2) : "";
+//     if (vatInput) vatInput.value = vat ? vat.toFixed(2) : "";
+//     if (grandtotalInput) grandtotalInput.value = grandtotal ? grandtotal.toFixed(2) : "";
+// }
 function calculateTotals(container = mainForm) {
     if (!container) return;
+
+    // لو row3Label = "تفعيل" يبقى المستخدم بيتحكم يدويًا في الاجمالي/القيمة المضافة/الاجمالي الكلي
+    const trigger = container.querySelector('[data-key="row3Label"]');
+    if (trigger && trigger.value.trim() === "تفعيل") return;
+
     const item1 = parseFloat(container.querySelector('[data-key="item1"]')?.value) || 0;
     const item2 = parseFloat(container.querySelector('[data-key="item2"]')?.value) || 0;
     const item3 = parseFloat(container.querySelector('[data-key="item3"]')?.value) || 0;
 
     const total = item1 + item2 + item3;
-    const vat = total * 0.14; 
+    const vat = total * 0.14;
     const grandtotal = total + vat;
 
     const totalInput = container.querySelector('[data-key="total"]');
     const vatInput = container.querySelector('[data-key="vat"]');
     const grandtotalInput = container.querySelector('[data-key="grandtotal"]');
 
-    if (totalInput) totalInput.value = total ? total.toFixed(2) : "";
-    if (vatInput) vatInput.value = vat ? vat.toFixed(2) : "";
-    if (grandtotalInput) grandtotalInput.value = grandtotal ? grandtotal.toFixed(2) : "";
+    if (totalInput) totalInput.value = total ? parseFloat(total.toFixed(2)).toString() : "";
+    if (vatInput) vatInput.value = vat ? parseFloat(vat.toFixed(2)).toString() : "";
+    if (grandtotalInput) grandtotalInput.value = grandtotal ? parseFloat(grandtotal.toFixed(2)).toString() : "";
 }
 
-if (mainForm) {
-    mainForm.addEventListener("input", (e) => {
+// نسخة عامة تشتغل على أي container (الفورم الأساسي أو أي نسخة محفوظة)
+function setupAutoCalc(container) {
+    if (!container) return;
+    container.addEventListener("input", (e) => {
         if (e.target.matches('[data-key="item1"], [data-key="item2"], [data-key="item3"]')) {
-            calculateTotals(mainForm);
+            calculateTotals(container);
         }
     });
+}
+
+// تبديل readonly / قابل للتعديل يدويًا لحقول total/vat/grandtotal حسب row3Label
+function setupManualTotalsToggle(container) {
+    if (!container) return;
+    const trigger = container.querySelector('[data-key="row3Label"]');
+    if (!trigger) return;
+
+    const manualFields = ["total", "vat", "grandtotal"]
+        .map((k) => container.querySelector(`[data-key="${k}"]`))
+        .filter(Boolean);
+
+    const isManualMode = () => trigger.value.trim() === "تفعيل";
+    const saveValue = (input) => { input.dataset.savedValue = input.value; };
+    const restoreValue = (input) => {
+        if (input.dataset.savedValue !== undefined) input.value = input.dataset.savedValue;
+    };
+
+    function updateFieldsState() {
+        const manual = isManualMode();
+        manualFields.forEach((input) => {
+            if (manual) {
+                restoreValue(input);
+                input.removeAttribute("readonly");
+                input.classList.add("manual-editable");
+            } else {
+                saveValue(input); // احفظ القيمة قبل ما ترجع readonly عشان متتمسحش
+                input.setAttribute("readonly", "true");
+                input.classList.remove("manual-editable");
+            }
+        });
+    }
+
+    manualFields.forEach((input) => {
+        input.addEventListener("input", () => {
+            if (isManualMode()) saveValue(input);
+        });
+    });
+
+    trigger.addEventListener("input", updateFieldsState);
+    updateFieldsState(); // تطبيق الحالة الصح لو فيه قيمة محفوظة من قبل
 }
 
 // ==========================================
@@ -108,7 +179,7 @@ function exportToWord(element) {
         "<head><meta charset='utf-8'><title>Export HTML to Word</title></head><body>";
     const footer = "</body></html>";
     const sourceHTML = header + element.innerHTML + footer;
-    
+
     const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
     const fileDownload = document.createElement("a");
     document.body.appendChild(fileDownload);
@@ -149,7 +220,7 @@ function printSingleElement(targetElement) {
 
     targetElement.classList.add("print-target");
     document.body.classList.add("printing-single");
-    
+
     setTimeout(() => {
         window.print();
         document.body.classList.remove("printing-single");
@@ -188,6 +259,9 @@ function renderCopy(copyData) {
     }
 
     setupDigitAutoTab(clone);
+    setupDateInputs(clone);
+    setupManualTotalsToggle(clone);
+    setupAutoCalc(clone);
     savedCopiesContainer.appendChild(clone);
 }
 
@@ -261,7 +335,7 @@ if (wordBtn) {
 function setupDigitAutoTab(root = document) {
     root.querySelectorAll(".date, .date-inputs").forEach((group) => {
         const boxes = Array.from(group.querySelectorAll('input[maxlength="1"]'));
-        
+
         boxes.forEach((box, idx) => {
             box.addEventListener("input", () => {
                 box.value = box.value.slice(-1);
@@ -274,7 +348,7 @@ function setupDigitAutoTab(root = document) {
                 if (nextBox && nextBox.value === "") {
                     nextBox.focus();
                     nextBox.select();
-                } 
+                }
                 // 2. كتابة من الشمال لليمين والخانة اليمين فاضية -> كمل يمين
                 else if (prevBox && prevBox.value === "") {
                     prevBox.focus();
@@ -292,7 +366,7 @@ function setupDigitAutoTab(root = document) {
                 if (e.key === "Backspace" && box.value === "") {
                     const nextBox = boxes[idx + 1];
                     const prevBox = boxes[idx - 1];
-                    
+
                     if (prevBox && prevBox.value !== "") {
                         prevBox.focus();
                     } else if (nextBox && nextBox.value !== "") {
@@ -301,7 +375,7 @@ function setupDigitAutoTab(root = document) {
                         prevBox.focus();
                     }
                 }
-                
+
                 // أسهم الاتجاهات
                 if (e.key === "ArrowLeft" && idx + 1 < boxes.length) {
                     boxes[idx + 1].focus();
@@ -318,10 +392,61 @@ function setupDigitAutoTab(root = document) {
     });
 }
 
+function setupDateInputs(root = document) {
+    root.querySelectorAll(".date-container").forEach((group) => {
+        const boxes = Array.from(group.querySelectorAll('input.date-input'));
+
+        boxes.forEach((box, idx) => {
+            const maxLen = parseInt(box.getAttribute("maxlength")) || 2;
+
+            box.addEventListener("input", () => {
+                // منع تجاوز الحد الأقصى للأرقام
+                if (box.value.length > maxLen) {
+                    box.value = box.value.slice(0, maxLen);
+                }
+                if (box.value === "") return;
+
+                const nextBox = boxes[idx + 1];
+
+                // الانتقال للخانة التالية فقط عند اكتمال الحد الأقصى للأرقام في الخانة الحالية
+                if (nextBox && box.value.length >= maxLen) {
+                    nextBox.focus();
+                    nextBox.select();
+                }
+            });
+
+            box.addEventListener("keydown", (e) => {
+                // التحكم بـ Backspace
+                if (e.key === "Backspace" && box.value === "") {
+                    const prevBox = boxes[idx - 1];
+                    if (prevBox) {
+                        prevBox.focus();
+                        prevBox.select();
+                    }
+                }
+
+                // أسهم الاتجاهات
+                if (e.key === "ArrowLeft" && idx + 1 < boxes.length) {
+                    boxes[idx + 1].focus();
+                } else if (e.key === "ArrowRight" && idx > 0) {
+                    boxes[idx - 1].focus();
+                }
+            });
+
+            box.addEventListener("focus", () => {
+                box.select();
+            });
+        });
+    });
+}
+
 // ==========================================
 // 8. التشغيل عند تحميل الصفحة
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     loadCopies();
     setupDigitAutoTab(document);
+    setupDateInputs(document);
+    setupManualTotalsToggle(mainForm);
+    setupAutoCalc(mainForm);
 });
