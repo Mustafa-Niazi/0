@@ -105,9 +105,15 @@ input[type="checkbox"] {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    justify-content: flex-start;
+    justify-content: start;
     align-items: center;
+     
 }
+.row .date:nth-last-child(1) {
+    
+   justify-content: center;
+}
+
 
 .day, .month, .yare {
     display: flex;
@@ -131,8 +137,8 @@ input[type="checkbox"] {
 }
 
 h2 {
-    margin: 15px -2px;
-    font-size: 20px;
+    margin: 15px 0px;
+    font-size: 19px;
     border: none;
 }
 
@@ -204,9 +210,11 @@ table th { font-size: 25px; }
 }
 
 .date input {
-    width: 25px;
+  width: 25px;
     height: 30px;
     border: 1px solid black;
+    text-align: center;
+    font-size: 22px;
 }
 
 .input textarea {
@@ -243,6 +251,7 @@ table tbody td input {
     font-size: 21px;
     outline: none;
     border: none;
+    text-align: center;
 }
 
 .controls {
@@ -455,3 +464,14 @@ table tbody td input {
 
 .modal-box.modal-danger { border-top: 5px solid #ef4444; }
 .modal-box.modal-danger h3 { color: #dc2626; }
+
+/* إلغاء أسهم الأرقام */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+   
+}
+
+/* input[type=number] {
+    -moz-appearance: textfield;
+} */
