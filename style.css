@@ -262,7 +262,7 @@ table tbody td input {
     gap: 15px;
 }
 
-.controls button {
+.controls #wordBtn,  #saveBtn,#printBtn {
     width: auto;
     height: auto;
     padding: 10px 25px;
@@ -274,7 +274,7 @@ table tbody td input {
     color: black;
 }
 
-.controls button:hover {
+.controls #wordBtn,  #saveBtn,#printBtn:hover {
     background: green;
     color: white;
 }
