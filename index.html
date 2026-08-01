@@ -52,21 +52,21 @@
 
             <div class="date">
                 <h2>فتره المستخلص من :</h2>
-                <div class="day"><input type="text" maxlength="1" data-key="fromDay1"><input type="text" maxlength="1" data-key="fromDay2"></div>
-                <div class="month"><input type="text" maxlength="1" data-key="fromMonth1"><input type="text" maxlength="1" data-key="fromMonth2"></div>
+                <div class="day"><input type="number" maxlength="1" data-key="fromDay1"><input type="number" maxlength="1" data-key="fromDay2"></div>
+                <div class="month"><input type="number" maxlength="1" data-key="fromMonth1"><input type="number" maxlength="1" data-key="fromMonth2"></div>
                 <div class="yare">
-                    <input type="text" maxlength="1" data-key="fromYear1"><input type="text" maxlength="1" data-key="fromYear2">
-                    <input type="text" maxlength="1" data-key="fromYear3"><input type="text" maxlength="1" data-key="fromYear4">
+                    <input type="number" maxlength="1" data-key="fromYear1"><input type="number" maxlength="1" data-key="fromYear2">
+                    <input type="number" maxlength="1" data-key="fromYear3"><input type="number" maxlength="1" data-key="fromYear4">
                 </div>
             </div>
 
             <div class="date">
                 <h2>الي :</h2>
-                <div class="day"><input type="text" maxlength="1" data-key="toDay1"><input type="text" maxlength="1" data-key="toDay2"></div>
-                <div class="month"><input type="text" maxlength="1" data-key="toMonth1"><input type="text" maxlength="1" data-key="toMonth2"></div>
+                <div class="day"><input type="number" maxlength="1" data-key="toDay1"><input type="number" maxlength="1" data-key="toDay2"></div>
+                <div class="month"><input type="number" maxlength="1" data-key="toMonth1"><input type="number" maxlength="1" data-key="toMonth2"></div>
                 <div class="yare">
-                    <input type="text" maxlength="1" data-key="toYear1"><input type="text" maxlength="1" data-key="toYear2">
-                    <input type="text" maxlength="1" data-key="toYear3"><input type="text" maxlength="1" data-key="toYear4">
+                    <input type="number" maxlength="1" data-key="toYear1"><input type="number" maxlength="1" data-key="toYear2">
+                    <input type="number" maxlength="1" data-key="toYear3"><input type="number" maxlength="1" data-key="toYear4">
                 </div>
             </div>
         </div>
@@ -119,11 +119,13 @@
                        <!-- <td colspan="2">
                           وقد تم تسليم المستخلص للمقاول بتاريخ &nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp; تتعهد جهة الإسناد بصحة كافة البيانات بالنموذج والتزامها<hr> بعدم صرف أية مبالغ للمقاول تزيد عن جاري الأعمال.
                         </td>  -->
-                        <td colspan="2">
+    <td colspan="2">
     وقد تم تسليم المستخلص للمقاول بتاريخ 
-    <input type="text" class="date-input" maxlength="2"> / 
-    <input type="text" class="date-input" maxlength="2"> / 
-    <input type="text" class="date-input" maxlength="4"> 
+    <span class="date-container" style="display: inline-flex; gap: 4px; align-items: center;">
+        <input type="number" class="date-input" maxlength="2"> / 
+        <input type="number" class="date-input" maxlength="2"> / 
+        <input type="number" class="date-input" maxlength="4">
+    </span>
     تتعهد جهة الإسناد بصحة كافة البيانات بالنموذج والتزامها<br> 
     بعدم صرف أية مبالغ للمقاول تزيد عن جاري الأعمال.
 </td>
