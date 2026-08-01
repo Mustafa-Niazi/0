@@ -228,6 +228,7 @@ table th { font-size: 25px; }
     position: absolute;
     top: 0px;
     left: 0;
+    font-family: 'Readex Pro';
 }
 .input textarea:focus{
     outline: black;
